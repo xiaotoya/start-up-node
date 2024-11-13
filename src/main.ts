@@ -4,6 +4,8 @@ import { ValidationPipe } from '@nestjs/common';
 import { AllExceptionsFilter } from './global/filter/all-exception.filter';
 import { HttpExceptionsFilter } from './global/filter/http-exception.filter';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import helmet from 'helmet';
+import csrf from 'csurf';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -21,6 +23,11 @@ async function bootstrap() {
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('doc', app, document);
+  app.use(helmet());
+  app.enableCors({
+    methods: 'get' 
+  });
+  app.use(csrf({cookie: true}));
   await app.listen(process.env.PORT ?? 3000);
 }
 bootstrap();
